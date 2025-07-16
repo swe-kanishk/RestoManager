@@ -16,7 +16,7 @@ export const markOrUpdateAttendance = async (req, res) => {
 
     const attendanceDate = new Date(date);
     const joiningDate = new Date(employee.createdAt);
-    if (attendanceDate > joiningDate) {
+    if (attendanceDate < joiningDate) {
       return res.status(400).json({
         success: false,
         message: "Cannot mark attendance before employee's joining date",
