@@ -1,0 +1,63 @@
+.MuiBox-root.css-1wnsr1i {
+    padding: 24px 18px !important;
+    border: none !important;
+    border-radius: 12px !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.MuiTableCell-root.MuiTableCell-head.MuiTableCell-stickyHeader.MuiTableCell-sizeMedium.css-1jxw05q-MuiTableCell-root {
+  background-color: rgb(247, 128, 31) !important;
+  color: white !important;
+}
+
+.pdf-export * {
+  color: black !important;
+  background: white !important;
+  border-color: black !important;
+}
+
+/* General box */
+.day-box {
+  padding: 5px;
+  border-radius: 50%;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  line-height: 20px;
+  text-align: center;
+}
+
+/* Present - Green */
+.present {
+  background-color: #d4f4dd !important;
+  border: 2px solid #30c97a !important;
+}
+
+/* Absent - Red */
+.absent {
+  background-color: #ffe0e0 !important;
+  border: 2px solid #ff4b4b !important;
+}
+
+/* Future - Grey */
+.future {
+  background-color: #f0f0f0 !important;
+  color: #bbb !important;
+}
+
+.rdrDay:has(.rdrSelected) .rdrDayNumber .day-box {
+  color: white;
+}
+
+.ReactCollapse--collapse {
+  transition: height 400ms ease-in-out !important;
+}
