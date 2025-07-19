@@ -9,13 +9,9 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AttendanceCalendar from "./components/Employee/AttendanceCalendar";
 
-<<<<<<< Updated upstream
 import Footer from "./components/Footer";
-=======
->>>>>>> Stashed changes
 import Navbar from "./components/Navbar";
 import Expense from "./pages/Expense";
-import Footer from "./components/footer";
 
 const MyContext = createContext();
 
