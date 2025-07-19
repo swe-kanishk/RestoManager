@@ -12,7 +12,7 @@ import AddEmployee from '../components/Employee/AddEmployee';
 import EditEmployee from '../components/Employee/EditEmployee';
 import AttendanceData from '../components/Employee/AttendanceData';
 import AddExpense from '../components/Expense/AddExpense';
-import UpdateExpense from '../components/Expense/updateExpense';
+import UpdateExpense from '../components/Expense/UpdateExpense';
 
 const style = {
   position: "absolute",
