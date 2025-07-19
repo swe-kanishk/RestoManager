@@ -1,10 +1,18 @@
-import express from 'express';
-import * as expenseController from '../controllers/expenseAndIncome.controller.js';
+import {Router} from 'express';
+import {
+  addExpense,
+  updateExpenseByDate,
+  deleteExpense,
+  getExpenseByDate,
+  getLast10DaysExpenses
+} from '../controllers/expenseAndIncome.controller.js';
 
-const expenseRouter = express.Router();
+const expenseRouter = Router();
 
-// expenseRouter.post('/', expenseController.addExpense);
-// expenseRouter.get('/:date', expenseController.getExpensesByDate);
-// expenseRouter.get('/month/:year/:month', expenseController.getExpensesByMonth);
+expenseRouter.get("/", getLast10DaysExpenses);
+expenseRouter.post("/", addExpense);
+expenseRouter.put("/:date", updateExpenseByDate);
+expenseRouter.delete("/:id", deleteExpense);
+expenseRouter.get("/:date", getExpenseByDate);
 
 export default expenseRouter;
