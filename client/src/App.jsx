@@ -9,9 +9,13 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AttendanceCalendar from "./components/Employee/AttendanceCalendar";
 
+<<<<<<< Updated upstream
 import Footer from "./components/Footer";
+=======
+>>>>>>> Stashed changes
 import Navbar from "./components/Navbar";
 import Expense from "./pages/Expense";
+import Footer from "./components/footer";
 
 const MyContext = createContext();
 
@@ -23,6 +27,7 @@ function App() {
   });
   const [employeesData, setEmployeesData] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [expensesData, setExpensesData] = useState([]);
 
   useEffect(() => {
     getData("/api/employee").then((res) => {
@@ -30,6 +35,11 @@ function App() {
         setEmployeesData(res?.employees);
       }
     });
+    getData('/api/expenses').then((res) => {
+      if(res?.success === true){
+        setExpensesData(res?.data)
+      }
+    })
   }, []);
 
   const value = {
@@ -38,7 +48,9 @@ function App() {
     employeesData,
     setEmployeesData,
     selectedEmployee,
-    setSelectedEmployee
+    setSelectedEmployee,
+    expensesData,
+    setExpensesData
   };
 
   return (

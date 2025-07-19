@@ -16,6 +16,20 @@ export const postData = async (url, formData) => {
   }
 };
 
+export const postData2 = async (url, formData) => {
+  try {
+    const res = await axios.post(`${apiUrl}${url}`, formData, {
+      headers: {
+         "Content-Type": "application/json",
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    return error?.response?.data
+  }
+};
+
 export const getData = async (url) => {
   try {
     const res = await axios.get(`${apiUrl}${url}`);

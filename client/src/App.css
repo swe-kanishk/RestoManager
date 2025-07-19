@@ -61,3 +61,7 @@ input[type=number] {
 .ReactCollapse--collapse {
   transition: height 400ms ease-in-out !important;
 }
+
+.MuiBox-root.css-1wnsr1i {
+  min-width: 500px !important;
+}

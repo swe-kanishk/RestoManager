@@ -11,6 +11,8 @@ import Fade from "@mui/material/Fade";
 import AddEmployee from '../components/Employee/AddEmployee';
 import EditEmployee from '../components/Employee/EditEmployee';
 import AttendanceData from '../components/Employee/AttendanceData';
+import AddExpense from '../components/Expense/AddExpense';
+import UpdateExpense from '../components/Expense/updateExpense';
 
 const style = {
   position: "absolute",
@@ -55,6 +57,12 @@ function Employee() {
             }
             {
               context?.openModel?.type === "Edit Employee" &&  <EditEmployee />
+            }
+            {
+              context?.openModel?.type === "Add Expense" &&  <AddExpense />
+            }
+            {
+              context?.openModel?.type === "Update Expense" &&  <UpdateExpense />
             }
           </Box>
         </Fade>

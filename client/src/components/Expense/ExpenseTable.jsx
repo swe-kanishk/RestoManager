@@ -29,30 +29,6 @@ const columns = [
 function ExpenseTable() {
   const context = useContext(MyContext);
 
-//   const handleRemoveEmployee = (empId) => {
-//     if (!empId) {
-//       toast.error("Employee ID is missing!");
-//       return;
-//     }
-//     deleteData(`/api/employee/${empId}`).then((res) => {
-//       if (res?.data?.success === true) {
-//         toast.success(res?.data?.message);
-//         const newData =
-//           context?.employeesData?.filter((emp) => emp?._id !== empId) || [];
-//         console.log(newData);
-//         context?.setEmployeesData(newData);
-//       }
-//     });
-//   };
-
-//   const handleEditEmployee = (emp) => {
-//     if (!emp) {
-//       toast.error("Employee is missing!");
-//       return;
-//     }
-//     context?.setOpenModel({type: "Edit Employee", _id: emp?._id, open: true});
-//   };
-
   const printRef = useRef();
 
   const handleDownloadPdf = async () => {
@@ -79,6 +55,28 @@ function ExpenseTable() {
     pdf.addImage(data, "PNG", 0, 0, canvas.width, canvas.height);
     pdf.save("employee-list.pdf");
   };
+
+  const handleUpdateExpense = (exp) => {
+    if (!exp) {
+      toast.error("Expense is missing!");
+      return;
+    }
+    context?.setOpenModel({type: "Update Expense", _id: exp?._id, open: true});
+  }
+
+  const handleDeleteExpense = (id) => {
+    if (!id) {
+      toast.error("Expense id is missing!");
+      return;
+    }
+    deleteData(`/api/expenses/${id}`).then((res) => {
+      if(res?.data?.success === true) {
+        toast.success(res?.data?.message);
+        const updatedData = context?.expensesData?.filter(item => id === item._id);
+        context?.setExpensesData(updatedData)
+      }
+    })
+  }
   return (
     <TableContainer
       sx={{ maxHeight: 440 }}
@@ -101,53 +99,31 @@ function ExpenseTable() {
               ))}
             </TableRow>
           </TableHead>
-          {/* <TableBody>
-            {context?.employeesData.map((employee, index) => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={employee?._id}>
+          <TableBody>
+            
+            {context?.expensesData.map((exp, index) => (
+              <TableRow hover role="checkbox" tabIndex={-1} key={exp?._id}>
                 <TableCell>{index}</TableCell>
-                <TableCell>{employee?.fullName}</TableCell>
-                <TableCell>
-                  <img
-                    src={
-                      employee?.avatar ||
-                      "https://static.vecteezy.com/system/resources/thumbnails/030/504/836/small_2x/avatar-account-flat-isolated-on-transparent-background-for-graphic-and-web-design-default-social-media-profile-photo-symbol-profile-and-people-silhouette-user-icon-vector.jpg"
-                    }
-                    className="h-[60px] aspect-square rounded-full object-cover object-center"
-                    alt=""
-                  />
-                </TableCell>
-                <TableCell>{employee?.createdAt?.split("T")[0]}</TableCell>
-                <TableCell>
-                  {(Number(employee?.salary) || 0).toLocaleString("en-IN", {
-                    style: "currency",
-                    currency: "INR",
-                    maximumFractionDigits: 0,
-                  })}
-                </TableCell>
+                <TableCell>{exp?.date?.split('T')[0]}</TableCell>
+                <TableCell>{exp?.total || 0}</TableCell>
+                <TableCell>{exp?.income || 0}</TableCell>
                 <TableCell>
                   <IconButton
-                   onClick={() => handleEditEmployee(employee)}
+                   onClick={() => handleUpdateExpense(exp)}
                    aria-label="edit" size="medium">
                     <MdEdit />
                   </IconButton>
                   <IconButton
-                    onClick={() => handleRemoveEmployee(employee?._id)}
+                    onClick={() => handleDeleteExpense(exp?._id)}
                     aria-label="delete"
                     size="large"
                   >
                     <DeleteIcon />
                   </IconButton>
-                  <IconButton
-                    onClick={() => context.selectedEmployee !== null ? context.setSelectedEmployee(null) : context.setSelectedEmployee(employee)}
-                    aria-label="delete"
-                    size="large"
-                  >
-                    <FaCalendarAlt size={20} />
-                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}
-          </TableBody> */}
+          </TableBody>
         </Table>
       </div>
 
