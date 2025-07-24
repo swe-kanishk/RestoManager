@@ -1,53 +1,67 @@
-
-import dayjs from "dayjs";
 import ExpenseModel from "../models/expense.model.js";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc.js";
+
+dayjs.extend(utc);
 
 export const addExpense = async (req, res) => {
   try {
     const { date, expenses } = req.body;
 
-    // Convert date from request and current date to start of day
-    const reqDate = dayjs(date).startOf("day").toDate();
-    const today = dayjs().startOf("day").toDate();
-
-    // Validate date is today
-    if (!dayjs(date).isSame(dayjs(), 'day')) {
-      return res.status(400).json({ message: "You can only add expenses for today's date." });
+    if (!date || !expenses || !Array.isArray(expenses)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid data provided." });
     }
 
-    // Check if an entry already exists for today's date (ignoring time)
-    const alreadyExists = await ExpenseModel.findOne({
-      date: {
-        $gte: dayjs(reqDate).startOf("day").toDate(),
-        $lte: dayjs(reqDate).endOf("day").toDate(),
-      }
+    const reqDate = dayjs.utc(date); // Use the exact date from frontend (in UTC)
+
+    // Extract day, month, year
+    const day = reqDate.date();
+    const month = reqDate.month(); // 0-indexed
+    const year = reqDate.year();
+
+    // Find if any expense already exists on that day (ignoring time)
+    const existingExpense = await ExpenseModel.findOne({
+      $expr: {
+        $and: [
+          { $eq: [{ $dayOfMonth: "$date" }, day] },
+          { $eq: [{ $month: "$date" }, month + 1] }, // $month is 1-indexed
+          { $eq: [{ $year: "$date" }, year] },
+        ],
+      },
     });
 
-    if (alreadyExists) {
-      return res.status(400).json({ message: "Budget for today already exists." });
+    if (existingExpense) {
+      return res.status(400).json({
+        success: false,
+        message: "Budget for this date already exists.",
+      });
     }
 
-    // Calculate total expense
-    const total = expenses.reduce((sum, item) => sum + parseFloat(item.price), 0);
+    const total = expenses.reduce(
+      (sum, item) => sum + parseFloat(item.price),
+      0
+    );
     const roundedTotal = parseFloat(total.toFixed(2));
 
-    // Get day name (e.g., Monday, Tuesday)
-    const day = dayjs(reqDate).format("dddd");
-
-    // Save entry
     const newExpense = new ExpenseModel({
-      date: reqDate,
-      day,
+      date: reqDate.toDate(), // Save exact date as received
+      day: reqDate.format("dddd"), // Save day name (e.g., 'Monday')
       expenses,
       total: roundedTotal,
     });
 
     await newExpense.save();
-    res.status(201).json({ success: true, data: newExpense });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: "Server Error" });
+    return res.status(201).json({
+      success: true,
+      data: newExpense,
+      message: "Expense added successfully!",
+    });
+  } catch (error) {
+    console.error("Add Expense Error:", error);
+    return res.status(500).json({ success: false, error: "Server Error" });
   }
 };
 
@@ -70,7 +84,10 @@ export const updateExpenseByDate = async (req, res) => {
       existing.expenses = expenses;
 
       // Recalculate total
-      const total = expenses.reduce((sum, item) => sum + parseFloat(item.price), 0);
+      const total = expenses.reduce(
+        (sum, item) => sum + parseFloat(item.price),
+        0
+      );
       existing.total = parseFloat(total.toFixed(2));
     }
 
@@ -101,22 +118,23 @@ export const updateExpenseByDate = async (req, res) => {
     await existing.save();
 
     res.status(200).json({ success: true, data: existing });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, error: "Server Error" });
   }
 };
 
-
 export const deleteExpense = async (req, res) => {
   try {
     const { id } = req.params;
 
     const deleted = await ExpenseModel.findByIdAndDelete(id);
-    if (!deleted) return res.status(404).json({ message: "No expense found for the given date" });
+    if (!deleted)
+      return res
+        .status(404)
+        .json({ message: "No expense found for the given date" });
 
-    res.status(200).json({ success: true, message: "Deleted successfully"});
+    res.status(200).json({ success: true, message: "Deleted successfully" });
   } catch (err) {
     res.status(500).json({ success: false, error: "Server Error" });
   }
@@ -125,13 +143,22 @@ export const deleteExpense = async (req, res) => {
 export const getExpenseByDate = async (req, res) => {
   try {
     const { date } = req.params;
-    const formattedDate = dayjs(date).startOf("day").toDate();
 
-    const expense = await ExpenseModel.findOne({ date: formattedDate });
-    if (!expense) return res.status(404).json({ message: "No data found for given date" });
+    // Convert to start and end of the given day in IST
+    const startOfDayIST = dayjs.tz(date, IST).startOf("day").toDate();
+    const endOfDayIST = dayjs.tz(date, IST).endOf("day").toDate();
+
+    const expense = await ExpenseModel.findOne({
+      date: { $gte: startOfDayIST, $lte: endOfDayIST },
+    });
+
+    if (!expense) {
+      return res.status(404).json({ message: "No data found for given date" });
+    }
 
     res.status(200).json({ success: true, data: expense });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false, error: "Server Error" });
   }
 };
@@ -164,6 +191,79 @@ export const getLast10DaysExpenses = async (req, res) => {
       data: expenses,
     });
   } catch (err) {
+    res.status(500).json({ success: false, error: "Server Error" });
+  }
+};
+
+export const getExpenseById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const expense = await ExpenseModel.findById(id);
+
+    if (!expense) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Expense not found" });
+    }
+
+    res.status(200).json({ success: true, data: expense });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: "Server Error" });
+  }
+};
+
+export const updateExpenseById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { expenses = [], income } = req.body;
+
+    const existing = await ExpenseModel.findById(id);
+
+    if (!existing) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    // Update expenses if provided
+    if (Array.isArray(expenses) && expenses.length > 0) {
+      existing.expenses = expenses;
+
+      // Calculate total
+      const total = expenses.reduce(
+        (sum, item) => sum + parseFloat(item.price),
+        0
+      );
+      existing.total = parseFloat(total.toFixed(2));
+    }
+
+    // Update income if provided
+    if (income !== undefined && income !== null) {
+      existing.income = parseFloat(income);
+    }
+
+    // Recalculate profit/loss and percentage
+    const { income: finalIncome = 0, total: finalTotal = 0 } = existing;
+
+    let profitOrLoss = "Break-even";
+    let percentage = 0;
+
+    if (finalIncome > finalTotal) {
+      profitOrLoss = "Profit";
+      percentage = ((finalIncome - finalTotal) / finalTotal) * 100;
+    } else if (finalIncome < finalTotal) {
+      profitOrLoss = "Loss";
+      percentage = ((finalTotal - finalIncome) / finalTotal) * 100;
+    }
+
+    existing.profitOrLoss = profitOrLoss;
+    existing.percentage = parseFloat(percentage.toFixed(2));
+
+    await existing.save();
+
+    res.status(200).json({ success: true, data: existing });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false, error: "Server Error" });
   }
 };

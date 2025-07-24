@@ -1,33 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
+import { MyContext } from "../../App";
+import { editData2, getData } from "../../utils/api";
 
 function UpdateExpense() {
-  const [selectedDate, setSelectedDate] = useState(dayjs().format("YYYY-MM-DD"));
   const [list, setList] = useState([]);
-  const [income, setIncome] = useState("");
+  const [income, setIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
-  const [formData, setFormData] = useState({ itemName: "", qty: "", price: "" });
+  const [formData, setFormData] = useState({
+    itemName: "",
+    qty: "",
+    price: "",
+  });
+
+  const context = useContext(MyContext);
 
   // Fetch data on selected date change
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data } = await axios.get(`/api/expenses/${selectedDate}`);
-        if (data?.data) {
-          setList(data.data.expenses || []);
-          setIncome(data.data.income || "");
+    getData(`/api/expenses/${context?.openModel?._id}`)
+      .then((res) => {
+        if (res?.success === true) {
+          setList(res?.data?.expenses);
+          setIncome(res?.data?.income || 0)
         }
-      } catch (err) {
-        toast.error("No expense found for this date.");
-        setList([]);
-        setIncome("");
-      }
-    };
-
-    if (selectedDate) fetchData();
-  }, [selectedDate]);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   // Recalculate total expense
   useEffect(() => {
@@ -57,7 +59,7 @@ function UpdateExpense() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (list.length === 0) {
+    if (!list?.length) {
       toast.error("Expense list is empty.");
       return;
     }
@@ -66,28 +68,26 @@ function UpdateExpense() {
       expenses: list,
       income: income || null,
     };
-
-    try {
-      const { data } = await axios.put(`/api/expenses/${selectedDate}`, payload);
-      toast.success("Expense updated successfully!");
-    } catch (err) {
-      toast.error("Failed to update expense.");
-    }
+    editData2(`/api/expenses/${context?.openModel?._id}`, payload).then(
+      (res) => {
+        if (res?.data?.success === true) {
+          const updated = context?.expensesData?.map((item) =>
+            item?._id === context?.openModel?._id ? res?.data?.data : item
+          );
+          context.setExpensesData(updated);
+          context?.setOpenModel({
+            open: false,
+            _id: null,
+            type: null,
+          });
+        }
+      }
+    );
   };
 
   return (
     <div className="flex flex-col gap-6 pr-4">
       <h2 className="text-2xl font-semibold text-gray-800">Update Expense</h2>
-
-      <div className="flex items-center gap-4">
-        <label>Date: </label>
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          className="border border-gray-300 p-2 rounded"
-        />
-      </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -97,7 +97,7 @@ function UpdateExpense() {
             placeholder="Item Name"
             value={formData.itemName}
             onChange={handleChange}
-            className="p-2 border border-gray-300 rounded"
+            className="!p-2 border border-gray-300 rounded"
           />
           <input
             type="text"
@@ -105,7 +105,7 @@ function UpdateExpense() {
             placeholder="Quantity"
             value={formData.qty}
             onChange={handleChange}
-            className="p-2 border border-gray-300 rounded"
+            className="!p-2 border border-gray-300 rounded"
           />
           <input
             type="number"
@@ -113,13 +113,13 @@ function UpdateExpense() {
             placeholder="Price"
             value={formData.price}
             onChange={handleChange}
-            className="p-2 border border-gray-300 rounded"
+            className="!p-2 border border-gray-300 rounded"
           />
         </div>
         <button
           type="button"
           onClick={handleAddExpense}
-          className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600"
+          className="bg-gray-500 text-white !p-2 rounded hover:bg-gray-600"
         >
           Add Item
         </button>
@@ -127,21 +127,21 @@ function UpdateExpense() {
         <table className="w-full text-sm text-left text-gray-600 border border-gray-200 rounded-lg overflow-hidden">
           <thead className="text-xs text-gray-700 uppercase bg-gray-100">
             <tr>
-              <th className="p-3">Sr. No.</th>
-              <th className="p-3">Item Name</th>
-              <th className="p-3">Quantity</th>
-              <th className="p-3 text-right">Price (₹)</th>
-              <th className="p-3 text-right">Actions</th>
+              <th className="!p-3">Sr. No.</th>
+              <th className="!p-3">Item Name</th>
+              <th className="!p-3">Quantity</th>
+              <th className="!p-3 text-right">Price (₹)</th>
+              <th className="!p-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {list.map((item, index) => (
               <tr key={index} className="bg-white border-t hover:bg-gray-50">
-                <td className="p-2">{index + 1}</td>
-                <td className="p-2">{item.itemName}</td>
-                <td className="p-2">{item.qty}</td>
-                <td className="p-2 text-right">₹{item.price}</td>
-                <td className="p-2 text-right">
+                <td className="!p-2">{index + 1}</td>
+                <td className="!p-2">{item.itemName}</td>
+                <td className="!p-2">{item.qty}</td>
+                <td className="!p-2 text-right">₹{item.price}</td>
+                <td className="!p-2 text-right">
                   <button
                     onClick={() => handleDelete(index)}
                     className="text-red-600 hover:underline"
@@ -153,23 +153,29 @@ function UpdateExpense() {
               </tr>
             ))}
             <tr className="bg-blue-100 font-semibold text-gray-900 border-t">
-              <td colSpan={3} className="p-2 text-left">Total Expense:</td>
-              <td colSpan={2} className="p-2 text-right">₹{totalExpense}</td>
+              <td colSpan={3} className="!p-2 text-left">
+                Total Expense:
+              </td>
+              <td colSpan={2} className="!p-2 text-right">
+                ₹{totalExpense}
+              </td>
             </tr>
           </tbody>
         </table>
-
+        <div className="flex flex-col gap-1">
+            <label htmlFor="sale" className="font-medium text-[14px]">Total Sale:</label>
         <input
+          id="sale"
           type="number"
           placeholder="Enter today's income (₹)"
           value={income}
           onChange={(e) => setIncome(e.target.value)}
-          className="p-2 border border-gray-300 rounded w-full"
+          className="!p-2 border border-gray-300 rounded w-full"
         />
-
+</div>
         <button
           type="submit"
-          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 mt-4"
+          className="bg-blue-500 text-white !p-2 rounded hover:bg-blue-600 mt-4"
         >
           Update Expense
         </button>

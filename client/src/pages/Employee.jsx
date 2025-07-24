@@ -12,7 +12,8 @@ import AddEmployee from '../components/Employee/AddEmployee';
 import EditEmployee from '../components/Employee/EditEmployee';
 import AttendanceData from '../components/Employee/AttendanceData';
 import AddExpense from '../components/Expense/AddExpense';
-import UpdateExpense from '../components/Expense/UpdateExpense';
+import UpdateExpense from '../components/Expense/updateExpense';
+import ViewExpense from '../components/Expense/ViewExpense';
 
 const style = {
   position: "absolute",
@@ -63,6 +64,9 @@ function Employee() {
             }
             {
               context?.openModel?.type === "Update Expense" &&  <UpdateExpense />
+            }
+            {
+              context?.openModel?.type === "View Expense" &&  <ViewExpense />
             }
           </Box>
         </Fade>

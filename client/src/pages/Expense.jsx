@@ -27,7 +27,7 @@ const style = {
 function Expense() {
   const context = useContext(MyContext)
   return (
-    <div className='flex flex-col gap-[1rem]'>
+    <div className='flex flex-col gap-[1rem] !p-[1rem]'>
       <div className="flex justify-between w-full">
         <h2 className='text-2xl font-bold'>Daily Expense Record</h2>
       <Button onClick={() => context?.setOpenModel({open: true, type: "Add Expense"})} variant="contained" className='!w-fit gap-[0.5rem] !capitalize !font-[500]'><FaPlus />Today's Expense</Button>

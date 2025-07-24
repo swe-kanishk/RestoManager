@@ -12,6 +12,7 @@ import AttendanceCalendar from "./components/Employee/AttendanceCalendar";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import Expense from "./pages/Expense";
+import Dashboard from "./pages/Dashboard";
 
 const MyContext = createContext();
 
@@ -54,6 +55,7 @@ function App() {
       <Router>
         <MyContext.Provider value={value}>
           <Navbar />
+          <Dashboard />
           <Expense />
           <Employee />
           <AttendanceCalendar />

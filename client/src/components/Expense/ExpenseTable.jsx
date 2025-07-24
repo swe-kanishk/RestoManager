@@ -18,11 +18,15 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import Button from "@mui/material/Button";
 
+import { IoMdEye } from "react-icons/io";
+import RangeMeter from "../RangeMeter";
+
 const columns = [
   { id: "serialNo", label: "Sr. No." },
   { id: "date", label: "Date" },
   { id: "expense", label: "Expense" },
   { id: "sale", label: "Sale" },
+  { id: "status", label: "Status" },
   { id: "actions", label: "Actions" },
 ];
 
@@ -64,6 +68,14 @@ function ExpenseTable() {
     context?.setOpenModel({type: "Update Expense", _id: exp?._id, open: true});
   }
 
+  const handleViewExpense = (exp) => {
+    if (!exp) {
+      toast.error("Expense is missing!");
+      return;
+    }
+    context?.setOpenModel({type: "View Expense", _id: exp?._id, open: true});
+  }
+
   const handleDeleteExpense = (id) => {
     if (!id) {
       toast.error("Expense id is missing!");
@@ -72,7 +84,7 @@ function ExpenseTable() {
     deleteData(`/api/expenses/${id}`).then((res) => {
       if(res?.data?.success === true) {
         toast.success(res?.data?.message);
-        const updatedData = context?.expensesData?.filter(item => id === item._id);
+        const updatedData = context?.expensesData?.filter(item => id !== item._id);
         context?.setExpensesData(updatedData)
       }
     })
@@ -92,7 +104,7 @@ function ExpenseTable() {
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{ minWidth: column.minWidth, fontWeight: 600 }}
+                  style={{ fontWeight: 600 }}
                 >
                   {column.label}
                 </TableCell>
@@ -103,15 +115,21 @@ function ExpenseTable() {
             
             {context?.expensesData.map((exp, index) => (
               <TableRow hover role="checkbox" tabIndex={-1} key={exp?._id}>
-                <TableCell>{index}</TableCell>
+                <TableCell>{index+1}</TableCell>
                 <TableCell>{exp?.date?.split('T')[0]}</TableCell>
                 <TableCell>{exp?.total || 0}</TableCell>
                 <TableCell>{exp?.income || 0}</TableCell>
+                <TableCell><RangeMeter percentage={exp?.percentage} status={exp?.profitOrLoss} /></TableCell>
                 <TableCell>
                   <IconButton
                    onClick={() => handleUpdateExpense(exp)}
                    aria-label="edit" size="medium">
                     <MdEdit />
+                  </IconButton>
+                  <IconButton
+                   onClick={() => handleViewExpense(exp)}
+                   aria-label="view" size="medium">
+                    <IoMdEye />
                   </IconButton>
                   <IconButton
                     onClick={() => handleDeleteExpense(exp?._id)}

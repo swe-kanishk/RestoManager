@@ -109,7 +109,7 @@ function EmployeeTable() {
           <TableBody>
             {context?.employeesData.map((employee, index) => (
               <TableRow hover role="checkbox" tabIndex={-1} key={employee?._id}>
-                <TableCell>{index}</TableCell>
+                <TableCell>{index+1}</TableCell>
                 <TableCell>{employee?.fullName}</TableCell>
                 <TableCell>
                   <img

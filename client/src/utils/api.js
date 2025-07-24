@@ -62,3 +62,16 @@ export const editData = async (url, formData) => {
     console.log(error);
   }
 };
+
+export const editData2 = async (url, formData) => {
+  try {
+    const res = await axios.put(`${apiUrl}${url}`, formData, {
+      headers: {
+         "Content-Type": "application/json",
+      },
+    });
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
