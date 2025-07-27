@@ -11,9 +11,11 @@ function AddExpense() {
     itemName: "",
     qty: "",
     price: "",
+    customDate: new Date().toISOString().split("T")[0], // default to today's date
   });
 
   const context = useContext(MyContext);
+
   useEffect(() => {
     const total = list.reduce((acc, item) => acc + parseFloat(item.price), 0);
     const roundedTotal = parseFloat(total.toFixed(2)); // limit to 2 decimals
@@ -31,44 +33,80 @@ function AddExpense() {
       toast.error("Please enter both Item Name and Price.");
       return;
     }
-    setList((prev) => [...prev, formData]);
-    setFormData({ itemName: "", qty: "", price: "" });
+    setList((prev) => [
+      ...prev,
+      {
+        itemName: formData.itemName,
+        qty: formData.qty,
+        price: formData.price,
+      },
+    ]);
+    setFormData((prev) => ({
+      ...prev,
+      itemName: "",
+      qty: "",
+      price: "",
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(list);
     if (!list.length) {
       toast.error("Please add expenses list to submit!");
       return;
     }
+
     const payload = {
-      date: new Date().toISOString(),
+      date: formData.customDate || new Date().toISOString().split("T")[0],
       expenses: list,
     };
 
-    postData2("/api/expenses", payload).then((res) => {
-      if (res?.success === true) {
-        context.setExpensesData((prev) => [...prev, res?.data]);
-        context?.setOpenModel({
-          open: false,
-          _id: null,
-          type: null,
-        });
-        return
-      }
-      toast.error(res?.message)
-    }).catch((err) => {
-      console.log(err)
-    });
+    postData2("/api/expenses", payload)
+      .then((res) => {
+        if (res?.success === true) {
+          context.setExpensesData((prev) => [...prev, res?.data]);
+
+          // ✅ Clear the list only, keep the date
+          setList([]);
+
+          // ✅ Optionally reset item inputs but keep customDate
+          setFormData((prev) => ({
+            ...prev,
+            itemName: "",
+            qty: "",
+            price: "",
+          }));
+
+          context?.setOpenModel({
+            open: false,
+            _id: null,
+            type: null,
+          });
+          return;
+        }
+        toast.error(res?.message);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
     <div className="flex flex-col gap-6 !pr-4">
       <h2 className="text-2xl font-semibold text-gray-800">
-        Add Today's Expense:{" "}
+        Add Today's Expense:
       </h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <input
+          type="date"
+          name="customDate"
+          value={formData.customDate}
+          onChange={handleChange}
+          className="!p-2 border border-gray-300 rounded"
+        />
+
         <input
           type="text"
           name="itemName"
@@ -76,7 +114,6 @@ function AddExpense() {
           value={formData.itemName}
           onChange={handleChange}
           className="!p-2 border border-gray-300 rounded"
-          required
         />
         <input
           type="text"
@@ -85,7 +122,6 @@ function AddExpense() {
           value={formData.qty}
           onChange={handleChange}
           className="!p-2 border border-gray-300 rounded"
-          required
         />
         <input
           type="number"
@@ -94,9 +130,9 @@ function AddExpense() {
           value={formData.price}
           onChange={handleChange}
           className="!p-2 border border-gray-300 rounded"
-          required
         />
         <button
+          type="button"
           onClick={handleAddExpense}
           className="bg-gray-500 text-white !p-2 rounded cursor-pointer hover:bg-gray-600"
         >
@@ -133,7 +169,6 @@ function AddExpense() {
         </table>
         <button
           type="submit"
-          onClick={handleSubmit}
           className="bg-blue-500 text-white !p-2 rounded cursor-pointer hover:bg-blue-600"
         >
           Done

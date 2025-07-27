@@ -9,38 +9,44 @@ import { getData } from "../../utils/api";
 import { MyContext } from "../../App";
 import formatDate from "../../Hooks/FormatDate";
 
-import { Collapse } from "react-collapse";
-
 const AttendanceData = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [attendance, setAttendance] = useState([]);
 
   const context = useContext(MyContext);
 
   const [formFields, setFormFields] = useState({
-    date: formatDate(new Date()),
+    date: formatDate(
+      new Date(
+        context?.selectedYear,
+        context?.selectedMonth - 1,
+        context?.selectedDay
+      )
+    ),
     employeeId: context?.selectedEmployee?._id,
     status: "Absent",
   });
 
   useEffect(() => {
     fetchAttendance();
-  }, [selectedMonth, context]);
+  }, [
+    context?.selectedMonth,
+    context?.selectedYear,
+    context?.selectedMonth,
+    context,
+  ]);
 
   const fetchAttendance = async () => {
-    if(context?.selectedEmployee === null){
-        setAttendance([]);
-        return;
+    if (context?.selectedEmployee === null) {
+      setAttendance([]);
+      return;
     }
-    const month = selectedMonth.getMonth() + 1;
-    const year = selectedMonth.getFullYear();
 
     try {
       const res = await getData(
-        `/api/attendance?employeeId=${context?.selectedEmployee?._id}&month=${month}&year=${year}`
+        `/api/attendance?employeeId=${context?.selectedEmployee?._id}&month=${context?.selectedMonth}&year=${context?.selectedYear}`
       );
-      console.log(res, context?.selectedEmployee?._id);
+      console.log(res);
       setAttendance(res.records || []);
     } catch (err) {
       console.error("Error fetching attendance:", err);
@@ -68,26 +74,35 @@ const AttendanceData = () => {
 
   const handleMonthChange = (date) => {
     setFormFields({ ...formFields, date: formatDate(date) });
-    setSelectedMonth(date);
+    context?.setSelectedDay(date.getDate()+1);
+    context?.setSelectedMonth(date.getMonth() + 1);
+    context?.setSelectedYear(date.getFullYear());
   };
 
   return (
-    <Collapse isOpened={Boolean(context.selectedEmployee)}>
-    <Calendar
-      date={selectedMonth}
-      onChange={handleMonthChange}
-      showMonthAndYearPickers={true}
-      maxDate={new Date()}
-      className="custom-calendar"
-       disabledDay={() => true}
-      color="#000"
-      dayContentRenderer={(date) => (
-        <div className={`day-box ${tileClassName(date)}`}>
-          {format(date, "d")}
-        </div>
-      )}
-    />
-    </Collapse>
+    <div className="!p-6">
+      <h1 className="text-2xl font-bold">Employee Attendance</h1>
+      <Calendar
+        date={
+          new Date(
+            context?.selectedYear,
+            context?.selectedMonth - 1,
+            context?.selectedDay-1
+          )
+        }
+        onChange={handleMonthChange}
+        showMonthAndYearPickers={true}
+        maxDate={new Date()}
+        className="custom-calendar border h-fit rounded-md"
+        disabledDay={() => true}
+        color="#000"
+        dayContentRenderer={(date) => (
+          <div className={`day-box ${tileClassName(date)}`}>
+            {format(date, "d")}
+          </div>
+        )}
+      />
+      </div>
   );
 };
 

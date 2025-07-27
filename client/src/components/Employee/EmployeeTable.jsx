@@ -8,11 +8,12 @@ import TableRow from "@mui/material/TableRow";
 import { MyContext } from "../../App";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaEye } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { toast } from "react-toastify";
 import { deleteData, editData } from "../../utils/api";
 import { FaFileDownload } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa6";
 
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -147,7 +148,9 @@ function EmployeeTable() {
                     aria-label="delete"
                     size="large"
                   >
-                    <FaCalendarAlt size={20} />
+                    {
+                      context?.selectedEmployee?._id === employee?._id ? <FaEyeSlash size={20} /> : <FaEye size={20} />
+                    }
                   </IconButton>
                 </TableCell>
               </TableRow>
