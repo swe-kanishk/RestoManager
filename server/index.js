@@ -9,6 +9,8 @@ import connectDB from "./config/connectDb.js";
 import employeeRouter from "./routes/employee.route.js";
 import expenseRouter from "./routes/expense.route.js";
 import employeeAttendanceRouter from "./routes/employeeAttendance.route.js";
+import payrollRouter from "./routes/payroll.route.js";
+import advancePaymentRouter from "./routes/advancePayment.route.js";
 
 const app = express();
 
@@ -28,6 +30,8 @@ const PORT = process.env.PORT || 3000;
 app.use("/api/employee", employeeRouter);
 app.use("/api/attendance", employeeAttendanceRouter);
 app.use('/api/expenses', expenseRouter);
+app.use('/api/payroll', payrollRouter);
+app.use('/api/advance', advancePaymentRouter);
 
 connectDB().then(() => {
   app.listen(PORT, () => {

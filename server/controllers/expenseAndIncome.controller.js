@@ -14,14 +14,14 @@ export const addExpense = async (req, res) => {
         .json({ success: false, message: "Invalid data provided." });
     }
 
-    const reqDate = dayjs.utc(date); // Use the exact date from frontend (in UTC)
+    // Parse date from frontend and normalize to start of day
+    const reqDate = dayjs.utc(date).startOf("day");
 
-    // Extract day, month, year
     const day = reqDate.date();
     const month = reqDate.month(); // 0-indexed
     const year = reqDate.year();
 
-    // Find if any expense already exists on that day (ignoring time)
+    // Check for existing expense on same day (ignoring time)
     const existingExpense = await ExpenseModel.findOne({
       $expr: {
         $and: [
@@ -35,7 +35,7 @@ export const addExpense = async (req, res) => {
     if (existingExpense) {
       return res.status(400).json({
         success: false,
-        message: "Budget for this date already exists.",
+        message: "Expense for this date already exists.",
       });
     }
 
@@ -46,8 +46,8 @@ export const addExpense = async (req, res) => {
     const roundedTotal = parseFloat(total.toFixed(2));
 
     const newExpense = new ExpenseModel({
-      date: reqDate.toDate(), // Save exact date as received
-      day: reqDate.format("dddd"), // Save day name (e.g., 'Monday')
+      date: reqDate.toDate(),                     // exact date (00:00 UTC)
+      day: reqDate.format("dddd"),                // weekday name (e.g., Monday)
       expenses,
       total: roundedTotal,
     });
@@ -59,9 +59,13 @@ export const addExpense = async (req, res) => {
       data: newExpense,
       message: "Expense added successfully!",
     });
+
   } catch (error) {
     console.error("Add Expense Error:", error);
-    return res.status(500).json({ success: false, error: "Server Error" });
+    return res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
   }
 };
 

@@ -1,22 +1,26 @@
 import AttendanceModel from "../models/attendance.model.js";
 import EmployeeModel from "../models/employee.model.js";
+import dayjs from "dayjs";
 
 export const markOrUpdateAttendance = async (req, res) => {
   const { employeeId, date, status } = req.body;
+
   if (!employeeId || !date || !status) {
     return res.status(400).json({ success: false, message: "Missing fields" });
   }
 
   try {
-    // Fetch the employee to get joining date
+    // Fetch the employee
     const employee = await EmployeeModel.findById(employeeId);
     if (!employee) {
       return res.status(404).json({ success: false, message: "Employee not found" });
     }
 
-    const attendanceDate = new Date(date);
-    const joiningDate = new Date(employee.createdAt);
-    if (attendanceDate < joiningDate) {
+    const attendanceDate = dayjs(date).startOf('day');
+    const joiningDate = dayjs(employee.createdAt).startOf('day');
+
+    // Allow attendance only on or after joining date
+    if (attendanceDate.isBefore(joiningDate)) {
       return res.status(400).json({
         success: false,
         message: "Cannot mark attendance before employee's joining date",
@@ -44,14 +48,14 @@ export const markOrUpdateAttendance = async (req, res) => {
 
     await attendance.save();
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Attendance marked",
       data: attendance,
     });
   } catch (error) {
     console.error("Error in markOrUpdateAttendance:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
