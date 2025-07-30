@@ -34,7 +34,7 @@ const PayrollPage = () => {
       )}/${parseInt(context?.selectedYear)}`
     ).then((res) => {
       if (res?.success === true) {
-        console.log(payrollData)
+        setTotalAdvance(res?.totalAdvance)
         setPayrollData(res?.payroll);
       }else {
         setPayrollData(null)
