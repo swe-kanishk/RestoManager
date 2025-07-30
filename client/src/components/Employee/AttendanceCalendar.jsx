@@ -94,7 +94,7 @@ const AttendanceCalendar = () => {
 
   return (
     <>
-      <h2 className="text-2xl font-bold !ml-[1rem] !mt-[1rem]">
+      <h2 className="sm:text-2xl text-lg font-bold !ml-[1rem] !mt-[1rem]">
         Mark Attendance
       </h2>
       <div className="flex !m-[1rem] items-start gap-4 flex-col md:flex-row bg-white border-2 w-fit rounded-md overflow-hidden drop-shadow-md">

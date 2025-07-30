@@ -48,9 +48,10 @@ function ExpenseTable() {
   };
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto border-gray-200 border-2 rounded-md drop-shadow-md">
       <TableContainer className="min-w-[700px]">
-        <Table stickyHeader>
+        <Table stickyHeader 
+        >
           <TableHead>
             <TableRow>
               {columns.map((column) => (

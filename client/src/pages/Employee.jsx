@@ -35,7 +35,7 @@ function Employee() {
     <div className="!p-[1rem]">
       <div className="flex flex-col gap-[1rem]">
         <div className="flex justify-between w-full">
-          <h2 className="text-2xl font-bold">Employees Data</h2>
+          <h2 className="sm:text-2xl text-lg font-bold">Employees Data</h2>
           <Button
             onClick={() =>
               context?.setOpenModel({ open: true, type: "Add Employee" })
@@ -43,7 +43,7 @@ function Employee() {
             variant="contained"
             className="!w-fit gap-[0.5rem] !capitalize !font-[500]"
           >
-            <FaPlus /> Add New Employee
+            <FaPlus /> <span className="hidden sm:flex">Add New Employee</span>
           </Button>
         </div>
         <EmployeeTable />

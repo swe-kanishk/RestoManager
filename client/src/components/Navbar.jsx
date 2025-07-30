@@ -14,7 +14,7 @@ function Navbar() {
             className="h-16"
             alt="Flowbite Logo"
           />
-          <span className="self-center text-2xl font-semibold whitespace-nowrap">
+          <span className="self-center sm:text-2xl text-lg font-semibold whitespace-nowrap">
             Anurag fast food centre
           </span>
         </Link>
