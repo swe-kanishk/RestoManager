@@ -11,19 +11,22 @@ export const createOrUpdatePayroll = async (req, res) => {
     year = parseInt(year);
 
     if (!month || month < 1 || month > 12) {
-      return res.status(400).json({ message: "Month must be between 1 and 12" });
+      return res
+        .status(400)
+        .json({ message: "Month must be between 1 and 12" });
     }
 
     const employee = await EmployeeModel.findById(employeeId);
-    if (!employee) return res.status(404).json({ message: "Employee not found" });
+    if (!employee)
+      return res.status(404).json({ message: "Employee not found" });
 
     const grossSalary = Number(employee.salary);
     const joinDate = new Date(employee.createdAt);
     const joinDay = joinDate.getDate();
 
     // Construct start and end date (month is 1-based, JS Date uses 0-based)
-    const startDate = new Date(year, month - 1, joinDay);         // e.g., July 16
-    const endDate = new Date(year, month, joinDay);               // e.g., August 16
+    const startDate = new Date(year, month - 1, joinDay); // e.g., July 16
+    const endDate = new Date(year, month, joinDay); // e.g., August 16
 
     // Count Absent Days
     const absentDays = await AttendanceModel.countDocuments({
@@ -33,7 +36,8 @@ export const createOrUpdatePayroll = async (req, res) => {
     });
     // Calculate per-day absent cut
     const currentMonthDays = new Date(year, month, 0).getDate(); // last day of current month
-    const perDayCut = absentCutPerDay || parseFloat(grossSalary / currentMonthDays);
+    const perDayCut =
+      absentCutPerDay || parseFloat(grossSalary / currentMonthDays);
 
     const absentDeduction = absentDays * perDayCut;
 
@@ -65,7 +69,7 @@ export const createOrUpdatePayroll = async (req, res) => {
         success: true,
         message: "Payroll updated",
         payroll,
-        totalAdvance
+        totalAdvance,
       });
     } else {
       const newPayroll = await PayrollModel.create({
@@ -82,7 +86,7 @@ export const createOrUpdatePayroll = async (req, res) => {
         success: true,
         message: "Payroll generated",
         payroll: newPayroll,
-        totalAdvance
+        totalAdvance,
       });
     }
   } catch (err) {
@@ -101,22 +105,38 @@ export const getEmployeePayroll = async (req, res) => {
         .json({ message: "Employee ID, month, and year are required" });
     }
 
+    const employee = await EmployeeModel.findById(employeeId);
+    if (!employee)
+      return res.status(404).json({ message: "Employee not found" });
+
+    const joinDate = new Date(employee.createdAt);
+    const joinDay = joinDate.getDate();
+
+    // Construct start and end date (month is 1-based, JS Date uses 0-based)
+    const startDate = new Date(year, month - 1, joinDay); // e.g., July 16
+    const endDate = new Date(year, month, joinDay);
+
+    const advances = await AdvancePaymentModel.find({
+      employeeId,
+      date: { $gte: startDate, $lt: endDate },
+    });
+
+    const totalAdvance = advances.reduce((sum, adv) => sum + adv.amount, 0);
+
     const payroll = await PayrollModel.findOne({
       employeeId,
       month: parseInt(month),
       year: parseInt(year),
-    })
+    });
 
     if (!payroll) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Payroll not found for the given criteria",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Payroll not found for the given criteria",
+      });
     }
 
-    res.status(200).json({ success: true, payroll });
+    res.status(200).json({ success: true, payroll, totalAdvance });
   } catch (error) {
     console.error("Error fetching payroll:", error);
     res.status(500).json({ message: "Server error", error });
