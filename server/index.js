@@ -11,6 +11,7 @@ import expenseRouter from "./routes/expense.route.js";
 import employeeAttendanceRouter from "./routes/employeeAttendance.route.js";
 import payrollRouter from "./routes/payroll.route.js";
 import advancePaymentRouter from "./routes/advancePayment.route.js";
+import dashboardRouter from "./routes/dashboard.route.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api/attendance", employeeAttendanceRouter);
 app.use('/api/expenses', expenseRouter);
 app.use('/api/payroll', payrollRouter);
 app.use('/api/advance', advancePaymentRouter);
+app.use('/api/dashboard', dashboardRouter);
 
 connectDB().then(() => {
   app.listen(PORT, () => {
