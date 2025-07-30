@@ -62,6 +62,41 @@ input[type=number] {
   transition: height 400ms ease-in-out !important;
 }
 
-.MuiBox-root.css-1wnsr1i {
-  min-width: 500px !important;
+
+
+
+@media (min-width: 550px) {
+  .MuiBox-root.css-1wnsr1i {
+    min-width: 500px !important;
+  }
+}
+@media (max-width: 500px) {
+  .MuiBox-root.css-1wnsr1i {
+    max-width: 450px !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .MuiBox-root.css-1wnsr1i {
+    max-width: 350px !important;
+  }
+}
+
+@media (max-width: 350px) {
+  .MuiBox-root.css-1wnsr1i {
+    max-width: 300px !important;
+  }
+}
+
+@media (max-width: 300px) {
+  .MuiBox-root.css-1wnsr1i {
+    max-width: 280px !important;
+  }
+}
+
+/* In your CSS file */
+@media (max-width: 420px) {
+  .hide-below-420 {
+    display: none;
+  }
 }

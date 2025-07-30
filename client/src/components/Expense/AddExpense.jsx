@@ -94,7 +94,7 @@ function AddExpense() {
 
   return (
     <div className="flex flex-col gap-6 !pr-4">
-      <h2 className="text-2xl font-semibold text-gray-800">
+      <h2 className="text-lg sm:text-2xl font-semibold text-gray-800">
         Add Today's Expense:
       </h2>
 
@@ -139,7 +139,8 @@ function AddExpense() {
           Add Expense
         </button>
 
-        <table className="w-full text-sm text-left text-gray-600 border border-gray-200 rounded-lg overflow-hidden">
+        <div className="w-full overflow-x-scroll">
+          <table className="w-full text-sm text-left text-gray-600 border border-gray-200 rounded-lg overflow-hidden">
           <thead className="text-xs text-gray-700 uppercase bg-gray-100">
             <tr>
               <th className="!p-3 whitespace-nowrap">Sr. No.</th>
@@ -167,6 +168,7 @@ function AddExpense() {
             </tr>
           </tbody>
         </table>
+        </div>
         <button
           type="submit"
           className="bg-blue-500 text-white !p-2 rounded cursor-pointer hover:bg-blue-600"

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 function Navbar() {
   return (
     <nav className="bg-white border-gray-200 border-b drop-shadow-md">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto !py-[0.2rem] !px-[0.8rem]">
+      <div className="w-full flex flex-wrap items-center justify-between mx-auto !py-[0.2rem] !px-[0.8rem]">
         <Link
           href="https://flowbite.com/"
           className="flex items-center !space-x-[0.5rem] rtl:space-x-reverse"
@@ -14,7 +14,7 @@ function Navbar() {
             className="h-16"
             alt="Flowbite Logo"
           />
-          <span className="self-center sm:text-2xl text-lg font-semibold whitespace-nowrap">
+          <span className="self-center hide-below-420 sm:text-2xl text-lg font-semibold whitespace-nowrap">
             Anurag fast food centre
           </span>
         </Link>
@@ -105,38 +105,6 @@ function Navbar() {
               />
             </svg>
           </button>
-        </div>
-        <div
-          className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
-          id="navbar-user"
-        >
-          <ul className="flex flex-col font-medium !p-[1rem] md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white">
-            <li>
-              <Link
-                to="#"
-                className="block py-2 !px-[0.5rem] text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0"
-                aria-current="page"
-              >
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="#"
-                className="block py-2 !px-[0.5rem] text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500"
-              >
-                Manage Expenses
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="#employeeTable"
-                className="block py-2 !px-[0.5rem] text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500"
-              >
-                Manage Employees
-              </Link>
-            </li>
-          </ul>
         </div>
       </div>
     </nav>

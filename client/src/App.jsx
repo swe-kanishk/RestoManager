@@ -35,6 +35,7 @@ function App() {
   const [selectedDay, setSelectedDay] = useState(new Date().getDate() + 1);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [dashboardData, setDashboardData] = useState(null);
 
   const [employeesData, setEmployeesData] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -49,6 +50,11 @@ function App() {
     getData("/api/expenses").then((res) => {
       if (res?.success === true) {
         setExpensesData(res?.data);
+      }
+    });
+    getData("/api/dashboard").then((res) => {
+      if (res?.success === true) {
+        setDashboardData(res?.data);
       }
     });
   }, []);
@@ -69,7 +75,9 @@ function App() {
     selectedDay,
     setSelectedDay,
     advanceData,
-    setAdvanceData
+    setAdvanceData,
+    setDashboardData,
+    dashboardData
   };
 
   return (
