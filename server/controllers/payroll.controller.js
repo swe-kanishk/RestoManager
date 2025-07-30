@@ -5,52 +5,48 @@ import PayrollModel from "../models/payroll.model.js";
 
 export const createOrUpdatePayroll = async (req, res) => {
   try {
-    const { employeeId, month, year, absentCutPerDay } = req.body;
+    let { employeeId, month, year, absentCutPerDay } = req.body;
+
+    month = parseInt(month); // Ensure it's a number
+    year = parseInt(year);
+
+    if (!month || month < 1 || month > 12) {
+      return res.status(400).json({ message: "Month must be between 1 and 12" });
+    }
 
     const employee = await EmployeeModel.findById(employeeId);
-    if (!employee)
-      return res.status(404).json({ message: "Employee not found" });
+    if (!employee) return res.status(404).json({ message: "Employee not found" });
 
-    // Extract join day from createdAt
-    const grossSalary = employee.salary;
+    const grossSalary = Number(employee.salary);
     const joinDate = new Date(employee.createdAt);
-    const joinDay = joinDate.getDate(); // just the day (e.g., 16)
+    const joinDay = joinDate.getDate();
 
-    // Build start and end of payroll period
-    const startDate = new Date(year, month, joinDay); // given month
-    const endDate = new Date(year, month + 1, joinDay); // next month same date
-    console.log(startDate, "\n", endDate);
-    // Count number of days marked absent in AttendanceModel
+    // Construct start and end date (month is 1-based, JS Date uses 0-based)
+    const startDate = new Date(year, month - 1, joinDay);         // e.g., July 16
+    const endDate = new Date(year, month, joinDay);               // e.g., August 16
+
+    // Count Absent Days
     const absentDays = await AttendanceModel.countDocuments({
       employeeId,
-      date: {
-        $gte: startDate,
-        $lt: endDate,
-      },
-      status: "Absent", // make sure this matches your DB status field
+      date: { $gte: startDate, $lt: endDate },
+      status: "Absent",
     });
+    // Calculate per-day absent cut
+    const currentMonthDays = new Date(year, month, 0).getDate(); // last day of current month
+    const perDayCut = absentCutPerDay || parseFloat(grossSalary / currentMonthDays);
 
-    // Calculate absent cut per day if not provided
-    const daysInMonth = new Date(year, month, 0).getDate(); // total days in current month
-    const perDayCut = absentCutPerDay ?? Math.round(grossSalary / daysInMonth);
-
-    // Total absent deduction
     const absentDeduction = absentDays * perDayCut;
 
-    // Find total advance taken in this period
+    // Total Advance during this payroll period
     const advances = await AdvancePaymentModel.find({
       employeeId,
-      date: {
-        $gte: startDate,
-        $lt: endDate,
-      },
+      date: { $gte: startDate, $lt: endDate },
     });
 
     const totalAdvance = advances.reduce((sum, adv) => sum + adv.amount, 0);
 
     const netSalary = grossSalary - absentDeduction - totalAdvance;
-
-    // Check if payroll already exists
+    // Check existing payroll
     const existingPayroll = await PayrollModel.findOne({
       employeeId,
       month,
@@ -63,14 +59,13 @@ export const createOrUpdatePayroll = async (req, res) => {
       existingPayroll.grossSalary = grossSalary;
       existingPayroll.netSalary = netSalary;
 
-      await existingPayroll.save();
+      const payroll = await existingPayroll.save();
 
       return res.status(200).json({
+        success: true,
         message: "Payroll updated",
-        absentDays,
-        totalAdvance,
-        absentDeduction,
-        netSalary,
+        payroll,
+        totalAdvance
       });
     } else {
       const newPayroll = await PayrollModel.create({
@@ -84,12 +79,10 @@ export const createOrUpdatePayroll = async (req, res) => {
       });
 
       return res.status(201).json({
+        success: true,
         message: "Payroll generated",
-        absentDays,
-        totalAdvance,
-        absentDeduction,
-        netSalary,
         payroll: newPayroll,
+        totalAdvance
       });
     }
   } catch (err) {
@@ -110,9 +103,9 @@ export const getEmployeePayroll = async (req, res) => {
 
     const payroll = await PayrollModel.findOne({
       employeeId,
-      month: parseInt(month)-1,
+      month: parseInt(month),
       year: parseInt(year),
-    }).populate("employeeId");
+    })
 
     if (!payroll) {
       return res
