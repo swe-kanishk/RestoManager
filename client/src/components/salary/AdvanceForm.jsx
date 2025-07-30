@@ -20,6 +20,7 @@ const AdvancePaymentForm = () => {
 
     const formattedDate = jsDate.toISOString().split("T")[0]; // "YYYY-MM-DD"
     setDate(formattedDate);
+    setEmployeeId(context?.selectedEmployee?._id)
   }, [context?.selectedMonth, context?.selectedYear, context?.selectedDay]);
 
   const handleSubmit = async (e) => {
@@ -55,22 +56,6 @@ const AdvancePaymentForm = () => {
     <div className="max-w-md mx-auto p-4 bg-white shadow rounded">
       <h2 className="text-xl font-bold mb-4">Create Advance Payment</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-medium mb-1">Employee</label>
-          <select
-            value={employeeId}
-            onChange={(e) => setEmployeeId(e.target.value)}
-            className="w-full border p-2 rounded"
-          >
-            <option value="">Select Employee</option>
-            {context?.employeesData?.map((emp) => (
-              <option key={emp._id} value={emp._id}>
-                {emp.fullName}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Amount input */}
         <div>
           <label className="block font-medium mb-1">Amount</label>

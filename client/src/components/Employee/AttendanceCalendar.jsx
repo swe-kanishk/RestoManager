@@ -22,7 +22,9 @@ const AttendanceCalendar = () => {
   const [employeeJoiningDate, setEmployeeJoiningDate] = useState(null);
 
   const context = useContext(MyContext);
-
+  const employeeJoinedDate = context?.selectedEmployee?.createdAt
+    ? new Date(context.selectedEmployee.createdAt)
+    : new Date();
   const [formFields, setFormFields] = useState({
     date: formatDate(new Date()),
     employeeId: "",
@@ -71,7 +73,7 @@ const AttendanceCalendar = () => {
   const handleMarkAttendance = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log(formFields)
+    console.log(formFields);
     axios
       .post(`${import.meta.env.VITE_API_URL}/api/attendance`, formFields, {
         headers: {
@@ -102,11 +104,11 @@ const AttendanceCalendar = () => {
             onChange={handleMonthChange}
             showMonthAndYearPickers={true}
             maxDate={new Date()}
+            minDate={employeeJoinedDate}
             className="custom-calendar"
             color="#000"
             disabledDay={(date) => {
-              if (!employeeJoiningDate) return true; // Disable all dates initially
-
+              if (!employeeJoiningDate) return true;
               const today = new Date();
               return (
                 isBefore(startOfDay(date), startOfDay(employeeJoiningDate)) ||

@@ -6,7 +6,31 @@
   box-sizing: border-box;
 }
 
-html, body {
+body {
   height: 100vh;
   width: 100%;
+  overflow-x: hidden;
+}
+
+.scrollable-x {
+  overflow-x: auto;
+}
+
+.scrollable-x::-webkit-scrollbar {
+  height: 5px; /* horizontal scrollbar */
+}
+
+.scrollable-x::-webkit-scrollbar-track {
+  background: #e5e7eb; /* Tailwind gray-300 */
+}
+
+.scrollable-x::-webkit-scrollbar-thumb {
+  background-color: #9ca3af; /* Tailwind gray-400, for better contrast */
+  border-radius: 10px;
+}
+
+/* Optional: Firefox scrollbar styling */
+.scrollable-x {
+  scrollbar-width: thin;
+  scrollbar-color: #9ca3af #e5e7eb;
 }

@@ -16,6 +16,7 @@ import Dashboard from "./pages/Dashboard";
 import PayrollPage from "./components/salary/PayrollPage";
 import CreatePayroll from "./components/salary/CreatePayroll";
 import AdvancePaymentForm from "./components/salary/AdvanceForm";
+import dayjs from 'dayjs';
 
 import AttendanceData from "./components/Employee/AttendanceData";
 
@@ -30,7 +31,7 @@ function App() {
     _id: null,
     type: null,
   });
-
+  const [advanceData, setAdvanceData] = useState([]);
   const [selectedDay, setSelectedDay] = useState(new Date().getDate() + 1);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -67,6 +68,8 @@ function App() {
     setSelectedYear,
     selectedDay,
     setSelectedDay,
+    advanceData,
+    setAdvanceData
   };
 
   return (
@@ -77,12 +80,15 @@ function App() {
           <Dashboard />
           <Expense />
           <Employee />
-          <Collapse isOpened={Boolean(selectedEmployee)}>
-            <div className="flex w-full justify-between">
+            <Collapse isOpened={selectedEmployee?._id || false}>
+          <div className="flex flex-col !w-full !p-6 !gap-2 rounded-md">
+            <h1 className="!text-2xl font-bold">Showing data of {selectedEmployee?.fullName || ''} for {dayjs().month(selectedMonth - 1).format('MMMM')} {selectedYear}</h1>
+            <div className="flex w-full flex-col md:flex-row gap-6 justify-between">
               <AttendanceData />
               <PayrollPage />
               <AdvanceTable />
             </div>
+          </div>
           </Collapse>
           <AttendanceCalendar />
           <Footer />

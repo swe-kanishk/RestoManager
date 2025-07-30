@@ -14,6 +14,9 @@ const AttendanceData = () => {
   const [attendance, setAttendance] = useState([]);
 
   const context = useContext(MyContext);
+  const employeeJoinedDate = context?.selectedEmployee?.createdAt
+  ? new Date(context.selectedEmployee.createdAt)
+  : new Date();
 
   const [formFields, setFormFields] = useState({
     date: formatDate(
@@ -54,45 +57,53 @@ const AttendanceData = () => {
   };
 
   const getStatus = (date) => {
-    const today = new Date();
+  const today = new Date();
+  if (isBefore(today, date)) return "future";
 
-    if (isBefore(today, date)) return "future";
+  const toLocalYMD = (d) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+      d.getDate()
+    ).padStart(2, "0")}`;
 
-    const match = attendance.find((a) => isSameDay(new Date(a.date), date));
+  const match = attendance.find(
+    (a) => toLocalYMD(new Date(a.date)) === toLocalYMD(date)
+  );
 
-    return match?.status || "absent"; // Default to absent if no entry
-  };
+  return match?.status || "absent";
+};
 
   const tileClassName = (date) => {
     const status = getStatus(date);
-    const today = new Date();
-    if (isSameDay(today, date)) return;
     if (status === "Present") return "present";
     if (status === "Absent") return "absent";
     if (status === "future") return "future";
+    return
   };
 
   const handleMonthChange = (date) => {
     setFormFields({ ...formFields, date: formatDate(date) });
-    context?.setSelectedDay(date.getDate()+1);
+    context?.setSelectedDay(date.getDate());
     context?.setSelectedMonth(date.getMonth() + 1);
     context?.setSelectedYear(date.getFullYear());
   };
 
+  const handleMonthNavigation = (date) => {
+    context?.setSelectedDay(date.getDate()+1);
+    context?.setSelectedMonth(date.getMonth() + 1);
+    context?.setSelectedYear(date.getFullYear());
+};
+
   return (
-    <div className="!p-6">
-      <h1 className="text-2xl font-bold">Employee Attendance</h1>
+    <div className="!py-2">
+      <h1 className="text-lg font-bold text-gray-500">Attendance Details</h1>
       <Calendar
-        date={
-          new Date(
-            context?.selectedYear,
-            context?.selectedMonth - 1,
-            context?.selectedDay-1
-          )
-        }
+        
         onChange={handleMonthChange}
         showMonthAndYearPickers={true}
+         onShownDateChange={handleMonthNavigation}
         maxDate={new Date()}
+         minDate={employeeJoinedDate}
+
         className="custom-calendar border h-fit rounded-md"
         disabledDay={() => true}
         color="#000"

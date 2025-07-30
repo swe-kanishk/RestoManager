@@ -2,8 +2,8 @@ import React from 'react';
 
 function RangeMeter({ percentage = 0, status = '' }) {
   return (
-    <div className="flex">
-    <div className="flex !p-[1px] relative w-full bg-gray-200 justify-start items-center rounded-lg">
+    <div className="flex relative">
+    <div className="flex !p-[1px] w-full bg-gray-200 justify-start items-center rounded-lg">
       <div
         style={{ width: `${percentage}%` }}
         className={`!p-[7px] rounded-md transition-all duration-500 ${
