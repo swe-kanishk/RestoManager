@@ -93,7 +93,7 @@ function AddExpense() {
   };
 
   return (
-    <div className="flex flex-col gap-6 !pr-4">
+    <div className="flex flex-col gap-6">
       <h2 className="text-lg sm:text-2xl font-semibold text-gray-800">
         Add Today's Expense:
       </h2>

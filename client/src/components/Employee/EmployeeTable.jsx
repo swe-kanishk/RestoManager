@@ -13,6 +13,7 @@ import { MdEdit } from "react-icons/md";
 import { toast } from "react-toastify";
 import { deleteData } from "../../utils/api";
 import { FaEyeSlash } from "react-icons/fa6";
+import formatINR from "../../utils/formatINR";
 
 const columns = [
   { id: "serialNo", label: "Sr. No." },
@@ -98,11 +99,7 @@ function EmployeeTable() {
               </TableCell>
               <TableCell>{employee?.createdAt?.split("T")[0]}</TableCell>
               <TableCell>
-                {(Number(employee?.salary) || 0).toLocaleString("en-IN", {
-                  style: "currency",
-                  currency: "INR",
-                  maximumFractionDigits: 0,
-                })}
+                {formatINR(Number(employee?.salary) || 0)}
               </TableCell>
               <TableCell>
                 <IconButton

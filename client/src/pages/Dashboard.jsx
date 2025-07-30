@@ -3,18 +3,10 @@ import { FaBalanceScaleRight, FaUserFriends } from 'react-icons/fa';
 import { MyContext } from '../App';
 import { IoCalculatorSharp } from 'react-icons/io5';
 import { FaMoneyBillTrendUp } from 'react-icons/fa6';
+import formatINR from '../utils/formatINR';
 
 function Dashboard() {
   const context = useContext(MyContext);
-
-  const formatINR = (amount) => {
-    if (!amount || isNaN(amount)) return '₹0';
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const cards = [
     {

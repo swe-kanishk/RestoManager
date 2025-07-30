@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import "./App.css";
-import { BrowserRouter as Router } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Employee from "./pages/Employee";
 
 import { getData } from "./utils/api";
@@ -22,6 +22,8 @@ import AttendanceData from "./components/Employee/AttendanceData";
 
 import { Collapse } from "react-collapse";
 import AdvanceTable from "./components/salary/AdvanceTable";
+import Login from "./components/auth/Login";
+import ProtectedRoutes from "./pages/ProtectedRoutes";
 
 const MyContext = createContext();
 
@@ -36,6 +38,7 @@ function App() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [dashboardData, setDashboardData] = useState(null);
+  const [isLogin, setIsLogin] = useState(false);
 
   const [employeesData, setEmployeesData] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -77,29 +80,45 @@ function App() {
     advanceData,
     setAdvanceData,
     setDashboardData,
-    dashboardData
+    dashboardData,
+    setIsLogin,
+    isLogin
   };
 
   return (
     <>
       <Router>
         <MyContext.Provider value={value}>
-          <Navbar />
-          <Dashboard />
-          <Expense />
-          <Employee />
-            <Collapse isOpened={selectedEmployee?._id || false}>
-          <div className="flex flex-col !w-full !p-6 !gap-2 rounded-md">
-            <h1 className="!text-2xl font-bold">Showing data of {selectedEmployee?.fullName || ''} for {dayjs().month(selectedMonth - 1).format('MMMM')} {selectedYear}</h1>
-            <div className="flex w-full flex-col md:flex-row gap-6 justify-between">
-              <AttendanceData />
-              <PayrollPage />
-              <AdvanceTable />
-            </div>
-          </div>
-          </Collapse>
-          <AttendanceCalendar />
-          <Footer />
+           <Routes>
+          <Route path="/login" element={<Login />} />
+
+          <Route
+            path="/"
+            element={
+              <ProtectedRoutes isLogin={isLogin}>
+                <Navbar />
+                <Dashboard />
+                <Expense />
+                <Employee />
+                <Collapse isOpened={!!selectedEmployee?._id}>
+                  <div className="flex flex-col !w-full !p-6 !gap-2 rounded-md">
+                    <h1 className="!text-2xl font-bold">
+                      Showing data of {selectedEmployee?.fullName || ""} for{" "}
+                      {dayjs().month(selectedMonth - 1).format("MMMM")} {selectedYear}
+                    </h1>
+                    <div className="flex w-full flex-col md:flex-row gap-6 justify-between">
+                      <AttendanceData />
+                      <PayrollPage />
+                      <AdvanceTable />
+                    </div>
+                  </div>
+                </Collapse>
+                <AttendanceCalendar />
+                <Footer />
+              </ProtectedRoutes>
+            }
+          />
+        </Routes>
         </MyContext.Provider>
       </Router>
       <ToastContainer

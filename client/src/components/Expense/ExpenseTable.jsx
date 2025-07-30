@@ -13,6 +13,7 @@ import { IoMdEye } from "react-icons/io";
 import { toast } from "react-toastify";
 import { deleteData } from "../../utils/api";
 import RangeMeter from "../RangeMeter";
+import formatINR from "../../utils/formatINR";
 
 const columns = [
   { id: "serialNo", label: "Sr. No." },
@@ -73,8 +74,8 @@ function ExpenseTable() {
               <TableRow hover key={exp?._id}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{exp?.date?.split("T")[0]}</TableCell>
-                <TableCell>{exp?.total || 0}</TableCell>
-                <TableCell>{exp?.income || 0}</TableCell>
+                <TableCell>{formatINR(exp?.total || 0)}</TableCell>
+                <TableCell>{formatINR(exp?.income || 0)}</TableCell>
                 <TableCell className="min-w-[200px]">
                   <div style={{ maxWidth: 150 }}>
                     <RangeMeter
@@ -84,7 +85,7 @@ function ExpenseTable() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", gap: "2px", flexWrap: "wrap" }}>
                     <IconButton onClick={() => handleUpdateExpense(exp)} size="small">
                       <MdEdit />
                     </IconButton>
