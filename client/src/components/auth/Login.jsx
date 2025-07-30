@@ -73,7 +73,7 @@ function Login() {
             className="h-16"
             alt="Logo"
           />
-          <span className="self-center hide-below-420 sm:text-2xl text-lg font-semibold whitespace-nowrap">
+          <span className="self-center sm:text-2xl text-lg font-semibold whitespace-nowrap">
             Anurag fast food centre
           </span>
         </div>
