@@ -14,8 +14,8 @@ const AttendanceData = () => {
   const [attendance, setAttendance] = useState([]);
 
   const context = useContext(MyContext);
-  const employeeJoinedDate = context?.selectedEmployee?.createdAt
-  ? new Date(context.selectedEmployee.createdAt)
+  const employeeJoinedDate = context?.selectedEmployee?.joiningDate
+  ? new Date(context.selectedEmployee.joiningDate)
   : new Date();
 
   const [formFields, setFormFields] = useState({

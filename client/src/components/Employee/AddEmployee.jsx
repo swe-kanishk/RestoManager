@@ -13,6 +13,7 @@ function AddEmployee() {
     salary: 0,
     contact: "",
     avatar: "",
+    joiningDate: new Date().toISOString().split("T")[0],
   });
 
   const context = useContext(MyContext);
@@ -35,34 +36,41 @@ function AddEmployee() {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formFields.fullName === "") {
-      toast.error("Please enter employee name!");
-      return;
-    }
-    if (formFields.salary === 0) {
-      toast.error("Please enter employee salary!");
-      return;
-    }
-    setIsLoading(true);
-    postData("/api/employee", formFields).then((res) => {
-      if (res?.success === true) {
-        toast.success(res?.message);
-        context.setOpenModel({ open: false, _id: null, type: null });
-        context?.setEmployeesData((prev) => {
-          return [...prev, res?.data];
-        });
-        setIsLoading(false);
-        setFormFields({
-          fullName: "",
-          salary: 0,
-          contact: "",
-          avatar: "",
-        });
-        setPreviews([]);
-      }
-    });
+  e.preventDefault();
+
+  if (formFields.fullName === "") {
+    toast.error("Please enter employee name!");
+    return;
+  }
+  if (formFields.salary === 0) {
+    toast.error("Please enter employee salary!");
+    return;
+  }
+
+  setIsLoading(true);
+
+  const formattedFields = {
+    ...formFields,
+    joiningDate: new Date(formFields.joiningDate).toISOString(), // "YYYY-MM-DDT00:00:00.000Z"
   };
+
+  postData("/api/employee", formattedFields).then((res) => {
+    if (res?.success === true) {
+      toast.success(res?.message);
+      context.setOpenModel({ open: false, _id: null, type: null });
+      context?.setEmployeesData((prev) => [...prev, res?.data]);
+      setIsLoading(false);
+      setFormFields({
+        fullName: "",
+        salary: 0,
+        contact: "",
+        avatar: "",
+        joiningDate: new Date().toISOString().split("T")[0],
+      });
+      setPreviews([]);
+    }
+  });
+};
 
   return (
     <form onSubmit={handleSubmit} className="w-full">
@@ -132,6 +140,23 @@ function AddEmployee() {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full !p-[0.6rem]"
           />
         </div>
+        <div className="!mb-[0.5rem]">
+  <label
+    htmlFor="joiningDate"
+    className="block !mb-[0.2rem] text-sm font-medium text-gray-600"
+  >
+    Joining Date
+  </label>
+  <input
+    type="date"
+    id="joiningDate"
+    name="joiningDate"
+    value={formFields?.joiningDate}
+    onChange={handleOnChangeInput}
+    required
+    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full !p-[0.6rem]"
+  />
+</div>
         <button
           type="submit"
           className="text-white bg-blue-700 !mb-[0.5rem] w-full hover:bg-blue-800 font-medium rounded-lg text-md !p-[0.5rem] flex items-center justify-center"

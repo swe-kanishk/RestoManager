@@ -22,8 +22,8 @@ const AttendanceCalendar = () => {
   const [employeeJoiningDate, setEmployeeJoiningDate] = useState(null);
 
   const context = useContext(MyContext);
-  const employeeJoinedDate = context?.selectedEmployee?.createdAt
-    ? new Date(context.selectedEmployee.createdAt)
+  const employeeJoinedDate = context?.selectedEmployee?.joiningDate
+    ? new Date(context?.selectedEmployee?.joiningDate)
     : new Date();
   const [formFields, setFormFields] = useState({
     date: formatDate(new Date()),
@@ -64,8 +64,8 @@ const AttendanceCalendar = () => {
 
     if (name === "employeeId") {
       const selectedEmp = context?.employeesData?.find((e) => e?._id === value);
-      if (selectedEmp?.createdAt) {
-        setEmployeeJoiningDate(formatDate(new Date(selectedEmp?.createdAt))); // ✅ fix
+      if (selectedEmp?.joiningDate) {
+        setEmployeeJoiningDate(formatDate(new Date(selectedEmp?.joiningDate))); // ✅ fix
       }
     }
   };

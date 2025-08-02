@@ -14,18 +14,23 @@ function EditEmployee() {
     fullName: "",
     salary: 0,
     avatar: "",
+    joiningDate: "",
   });
 
   useEffect(() => {
     const currEmp = context?.employeesData?.find(
       (emp) => emp?._id === context?.openModel?._id
     );
+
     setFormFields({
       fullName: currEmp?.fullName || "",
       salary: currEmp?.salary || 0,
       avatar:
         currEmp?.avatar ||
         "https://www.freeiconspng.com/uploads/upload-icon-30.png",
+      joiningDate: currEmp?.joiningDate
+        ? new Date(currEmp.joiningDate).toISOString().split("T")[0]
+        : "",
     });
   }, []);
 
@@ -59,9 +64,13 @@ function EditEmployee() {
     const formData = new FormData();
     formData.append("fullName", formFields.fullName);
     formData.append("salary", formFields.salary);
+    formData.append(
+      "joiningDate",
+      new Date(formFields.joiningDate).toISOString()
+    );
 
     if (formFields.avatar && typeof formFields.avatar !== "string") {
-      formData.append("avatar", formFields.avatar); // only send if new file
+      formData.append("avatar", formFields.avatar);
     }
 
     setIsLoading(true);
@@ -160,7 +169,22 @@ function EditEmployee() {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full !p-[0.6rem]"
           />
         </div>
-
+        <div className="!mb-[0.5rem]">
+          <label
+            htmlFor="joiningDate"
+            className="block !mb-[0.2rem] text-sm font-medium text-gray-600"
+          >
+            Joining Date
+          </label>
+          <input
+            type="date"
+            id="joiningDate"
+            name="joiningDate"
+            value={formFields.joiningDate}
+            onChange={handleOnChangeInput}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full !p-[0.6rem]"
+          />
+        </div>
         <button
           type="submit"
           disabled={isLoading}

@@ -97,7 +97,7 @@ function EmployeeTable() {
                   alt=""
                 />
               </TableCell>
-              <TableCell>{employee?.createdAt?.split("T")[0]}</TableCell>
+              <TableCell>{employee?.joiningDate?.split("T")[0]}</TableCell>
               <TableCell>
                 {formatINR(Number(employee?.salary) || 0)}
               </TableCell>
