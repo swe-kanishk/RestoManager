@@ -12,8 +12,12 @@ const employeeSchema = new Schema(
     },
     salary: {
       type: String,
-      required: [true, "Enter Employee Salary"]
-    }
+      required: [true, "Enter Employee Salary"],
+    },
+    joiningDate: {
+      type: Date,
+      required: [true, "Joining date is required"],
+    },
   },
   { timestamps: true }
 );

@@ -17,7 +17,7 @@ export const markOrUpdateAttendance = async (req, res) => {
     }
 
     const attendanceDate = dayjs(date).startOf('day');
-    const joiningDate = dayjs(employee.createdAt).startOf('day');
+    const joiningDate = dayjs(employee.joiningDate).startOf('day');
 
     // Allow attendance only on or after joining date
     if (attendanceDate.isBefore(joiningDate)) {

@@ -21,7 +21,7 @@ export const createOrUpdatePayroll = async (req, res) => {
       return res.status(404).json({ message: "Employee not found" });
 
     const grossSalary = Number(employee.salary);
-    const joinDate = new Date(employee.createdAt);
+    const joinDate = new Date(employee.joiningDate);
     const joinDay = joinDate.getDate();
 
     // Construct start and end date (month is 1-based, JS Date uses 0-based)
@@ -109,7 +109,7 @@ export const getEmployeePayroll = async (req, res) => {
     if (!employee)
       return res.status(404).json({ message: "Employee not found" });
 
-    const joinDate = new Date(employee.createdAt);
+    const joinDate = new Date(employee.joiningDate);
     const joinDay = joinDate.getDate();
 
     // Construct start and end date (month is 1-based, JS Date uses 0-based)

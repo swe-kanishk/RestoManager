@@ -45,7 +45,7 @@ export const getAdvancePayments = async (req, res) => {
       return res.status(404).json({ message: "Employee not found" });
     }
 
-    const joiningDate = new Date(employee.createdAt);
+    const joiningDate = new Date(employee.joiningDate);
     const joiningDay = joiningDate.getDate(); // e.g. 16
 
     // Step 2: Define custom start and end based on joining day
