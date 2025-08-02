@@ -76,15 +76,14 @@ function EditEmployee() {
     setIsLoading(true);
     try {
       const res = await editData(`/api/employee/${empId}`, formData);
+      console.log(res)
       if (res?.data?.success === true) {
         toast.success(res?.data?.message);
 
         // update employee data in context
-        context.setEmployeesData((prev) =>
-          prev.map((emp) =>
-            emp._id === empId ? { ...emp, ...res?.data?.data } : emp
-          )
-        );
+        const updated = context?.employeesData?.map(emp => emp?._id === empId ? res?.data?.data : emp);
+
+        context.setEmployeesData(updated);
 
         context.setOpenModel({ open: false, _id: null, type: null });
       }

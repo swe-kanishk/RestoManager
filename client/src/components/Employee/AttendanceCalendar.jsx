@@ -19,14 +19,24 @@ const AttendanceCalendar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [attendance, setAttendance] = useState([]);
-  const [employeeJoiningDate, setEmployeeJoiningDate] = useState(null);
+  const [employeeJoinedDate, setEmployeeJoinedDate] = useState(new Date());
 
   const context = useContext(MyContext);
-  const employeeJoinedDate = context?.selectedEmployee?.joiningDate
+
+  useEffect(() => {
+    const date = context?.selectedEmployee?.joiningDate
     ? new Date(context?.selectedEmployee?.joiningDate)
     : new Date();
+    setEmployeeJoinedDate(date)
+    setFormFields({
+    date: new Date(),
+    employeeId: "",
+    status: "Absent",
+  })
+  }, [context?.employeesData])
+
   const [formFields, setFormFields] = useState({
-    date: formatDate(new Date()),
+    date: new Date(),
     employeeId: "",
     status: "Absent",
   });
@@ -65,7 +75,7 @@ const AttendanceCalendar = () => {
     if (name === "employeeId") {
       const selectedEmp = context?.employeesData?.find((e) => e?._id === value);
       if (selectedEmp?.joiningDate) {
-        setEmployeeJoiningDate(formatDate(new Date(selectedEmp?.joiningDate))); // ✅ fix
+        setEmployeeJoinedDate(new Date(selectedEmp?.joiningDate)); // ✅ fix
       }
     }
   };
@@ -108,10 +118,10 @@ const AttendanceCalendar = () => {
             className="custom-calendar"
             color="#000"
             disabledDay={(date) => {
-              if (!employeeJoiningDate) return true;
+              if (!employeeJoinedDate) return true;
               const today = new Date();
               return (
-                isBefore(startOfDay(date), startOfDay(employeeJoiningDate)) ||
+                isBefore(startOfDay(date), startOfDay(employeeJoinedDate)) ||
                 isAfter(startOfDay(date), startOfDay(today))
               );
             }}
