@@ -170,7 +170,7 @@ export const getExpenseByDate = async (req, res) => {
 export const getLast10DaysExpenses = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 10;
+    const limit = 30;
     const skip = (page - 1) * limit;
 
     const today = dayjs().endOf("day").toDate();
