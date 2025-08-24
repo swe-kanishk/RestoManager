@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -11,9 +11,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { MdEdit } from "react-icons/md";
 import { IoMdEye } from "react-icons/io";
 import { toast } from "react-toastify";
-import { deleteData } from "../../utils/api";
+import { deleteData, getData } from "../../utils/api";
 import RangeMeter from "../RangeMeter";
 import formatINR from "../../utils/formatINR";
+import TablePagination from "@mui/material/TablePagination";
 
 const columns = [
   { id: "serialNo", label: "Sr. No." },
@@ -26,6 +27,22 @@ const columns = [
 
 function ExpenseTable() {
   const context = useContext(MyContext);
+
+  const [page, setPage] = useState(0); // MUI page starts from 0
+  const [rowsPerPage, setRowsPerPage] = useState(30);
+  const [totalCount, setTotalCount] = useState(0);
+
+  const fetchExpenses = async () => {
+    const res = await getData(`/api/expenses?page=${page + 1}`);
+    if (res?.success) {
+      context?.setExpensesData(res?.data);
+      setTotalCount(res?.totalCount);
+    }
+  };
+
+  useEffect(() => {
+    fetchExpenses();
+  }, [page]);
 
   const handleUpdateExpense = (exp) => {
     if (!exp) return toast.error("Expense is missing!");
@@ -50,7 +67,7 @@ function ExpenseTable() {
 
   return (
     <div className="w-full overflow-x-auto border-gray-200 border-2 rounded-md drop-shadow-md">
-      <TableContainer className="min-w-[700px]">
+      <TableContainer className="min-w-[700px] max-h-[400px] overflow-y-scroll">
         <Table stickyHeader 
         >
           <TableHead>
@@ -102,6 +119,14 @@ function ExpenseTable() {
           </TableBody>
         </Table>
       </TableContainer>
+       <TablePagination
+        component="div"
+        count={totalCount}
+        page={page}
+        onPageChange={(e, newPage) => setPage(newPage)}
+        rowsPerPage={rowsPerPage}
+        rowsPerPageOptions={[30]} 
+      />
     </div>
   );
 }
