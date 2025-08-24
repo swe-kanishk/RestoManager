@@ -3,14 +3,14 @@ import {
   addExpense,
   deleteExpense,
   getExpenseByDate,
-  getLast10DaysExpenses,
+  getLast30DaysExpenses,
   getExpenseById,
   updateExpenseById
 } from '../controllers/expenseAndIncome.controller.js';
 
 const expenseRouter = Router();
 
-expenseRouter.get("/", getLast10DaysExpenses);
+expenseRouter.get("/", getLast30DaysExpenses);
 expenseRouter.get("/:id", getExpenseById);
 expenseRouter.post("/", addExpense);
 expenseRouter.put("/:id", updateExpenseById);

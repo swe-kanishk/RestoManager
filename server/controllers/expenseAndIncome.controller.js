@@ -167,21 +167,21 @@ export const getExpenseByDate = async (req, res) => {
   }
 };
 
-export const getLast10DaysExpenses = async (req, res) => {
+export const getLast30DaysExpenses = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 30;
+    const limit = 30; // items per page
     const skip = (page - 1) * limit;
 
     const today = dayjs().endOf("day").toDate();
-    const tenDaysAgo = dayjs().subtract(10, 'day').startOf("day").toDate();
+    const thirtyDaysAgo = dayjs().subtract(30, 'day').startOf("day").toDate();
 
     const totalCount = await ExpenseModel.countDocuments({
-      date: { $gte: tenDaysAgo, $lte: today },
+      date: { $gte: thirtyDaysAgo, $lte: today },
     });
 
     const expenses = await ExpenseModel.find({
-      date: { $gte: tenDaysAgo, $lte: today },
+      date: { $gte: thirtyDaysAgo, $lte: today },
     })
       .sort({ date: -1 })
       .skip(skip)

@@ -35,7 +35,9 @@ export const createOrUpdatePayroll = async (req, res) => {
       status: "Absent",
     });
     // Calculate per-day absent cut
-    const currentMonthDays = new Date(year, month, 0).getDate(); // last day of current month
+    // const currentMonthDays = new Date(year, month, 0).getDate(); // last day of current month
+    const currentMonthDays = 30; // last day of current month
+   
     const perDayCut =
       absentCutPerDay || parseFloat(grossSalary / currentMonthDays);
 
